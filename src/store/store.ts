@@ -4,10 +4,11 @@ export class Store {
   private state:{ [key: string]: any };
 
   constructor( reducers = {}, initialState = {}) {
+    this.subscribers = [];
     this.reducers = reducers;
     this.state = this.reduce(initialState, {});
     // pass no actions into the reducer
-    // /educer returns a 'default' / initial state
+    // reducer returns a 'default' / initial state
 
   }
 
@@ -15,8 +16,24 @@ export class Store {
     return this.state;
   }
 
+  subscribe(fn) {
+    // subscribers should be notified if state changes
+    this.subscribers = [...this.subscribers, fn];
+    this.notify();
+    // returns array without the newly added function
+    // in order for unsubscribe to work
+    return() => {
+      this.subscribers = this.subscribers.filter( sub => sub !== fn)
+    }
+  }
+
   dispatch( action) {
     this.state = this.reduce(this.state, action);
+    this.notify();
+  }
+
+  private notify() {
+    this.subscribers.forEach( fn => fn(this.value));
   }
 
   private reduce(state, action) {

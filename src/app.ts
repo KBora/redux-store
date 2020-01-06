@@ -8,12 +8,12 @@ const destroy = document.querySelector('.unsubscribe') as HTMLButtonElement;
 const todoList = document.querySelector('.todos') as HTMLLIElement;
 
 const reducers = {
-  todos: fromStore.reducerTodos
+  todos: fromStore.reducerTodos,
+  poo: fromStore.poo
 };
 
+console.log(reducers);
 const store = new fromStore.Store(reducers);
-
-console.log('initial store.value', store.value);
 
 button.addEventListener(
   'click',
@@ -27,13 +27,11 @@ button.addEventListener(
       payload
     });
 
-    console.log('After dispatching ADD_TODO', store.value);
-
-    store.dispatch({
-      type: 'LOADING'
-    });
-
-    console.log('After dispatching LOADING', store.value);
+     // store.dispatch({
+    //   type: 'LOADING'
+    // });
+    //
+    // console.log('After dispatching LOADING', store.value);
 
 
     input.value = '';
@@ -41,9 +39,17 @@ button.addEventListener(
   false
 );
 
+const unsubscribe = store.subscribe( state => {
+  renderTodos(state.todos.data);
+});
+
+destroy.addEventListener('click', unsubscribe, false);
+
 todoList.addEventListener('click', function(event) {
   const target = event.target as HTMLButtonElement;
   if (target.nodeName.toLowerCase() === 'button') {
     console.log(target);
   }
 });
+
+store.subscribe( state => console.log('STATE: ', state));
